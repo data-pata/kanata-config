@@ -1,0 +1,111 @@
+;; Kanata Configuration
+;;
+;;
+;; Nordic ISO Key Names:
+;; - grv  = § (section/half key)
+;; - min  = + (plus key)
+;; - eql  = ´ (acute accent)
+;; - lbrc = Å
+;; - rbrc = ¨ (diaeresis)
+;; - scln = Ö
+;; - apos = Ä
+;; - bksl = ' (apostrophe next to Enter)
+;; - 102d = < (extra key left of Z)
+;; - lmet = Super/Windows key
+
+(defcfg
+  process-unmapped-keys yes
+  log-layer-changes no
+  ;; danger-enable-cmld yes
+  ;; concurrent-tap-hold yes
+)
+
+;; Variables
+(defvar
+  tap-time 100
+  hold-time 150
+  ;; chord-time 60
+)
+
+(defsrc
+  esc   f1    f2    f3    f4    f5    f6    f7    f8    f9    f10   f11   f12
+  grv   1     2     3     4     5     6     7     8     9     0     min   eql   bspc
+  tab   q     w     e     r     t     y     u     i     o     p     lbrc  rbrc  ret
+  caps  a     s     d     f     g     h     j     k     l     scln  apos  bksl
+  lsft  102d  z     x     c     v     b     n     m     ,     .     /     rsft
+  lctl        lmet  lalt              spc               ralt  rctl
+)
+
+(defalias
+  cap (tap-hold 100 150 esc lctl)
+  iso3 (layer-while-held isolevel3)
+)
+
+(deflayer base
+  esc   f1    f2    f3    f4    f5    f6    f7    f8    f9    f10   f11   f12
+  grv   1     2     3     4     5     6     7     8     9     0     min   eql   bspc
+  tab   q     w     e     r     t     y     u     i     o     p     lbrc  rbrc  ret
+  @cap  a     s     d     f     g     h     j     k     l     scln  apos  bksl
+  lsft  102d  z     x     c     v     b     n     m     ,     .     /     rsft
+  lctl  lmet  lalt              spc               @iso3 rctl
+)
+
+(deflayer isolevel3
+  _     _     _     _     _     _     _     _     _     _     _     _     _
+  @ra§  @ra1  @ra2  @ra3  @ra4  @ra5  @ra6  @ra7  @ra8  @ra9  @ra0  @ra+  @ra´  _
+  _     @raq  @raw  @rae  @rar  @rat  @ray  @rau  up    @rao  @rap  @raÅ  @ra¨  _
+  _     @raa  @ras  @rad  @raf  @rag  @rah  left  down  rght  @raÖ  @raÄ  @ra'
+  _     @ra<  @raz  @rax  @rac  @rav  @rab  @ran  @ram  @ra,  @ra.  @ra/  _
+  _     _     _                 _                 _     _
+)
+
+;; Ralt/altGr passthrough for ISO level 3
+(defalias
+  ra§ (multi ralt grv)
+  ra1 (multi ralt 1)
+  ra2 (multi ralt 2)
+  ra3 (multi ralt 3)
+  ra4 (multi ralt 4)
+  ra5 (multi ralt 5)
+  ra6 (multi ralt 6)
+  ra7 (multi ralt 7)
+  ra8 (multi ralt 8)
+  ra9 (multi ralt 9)
+  ra0 (multi ralt 0)
+  ra+ (multi ralt min)
+  ra´ (multi ralt eql)
+
+  raq (multi ralt q)
+  raw (multi ralt w)
+  rae (multi ralt e)
+  rar (multi ralt r)
+  rat (multi ralt t)
+  ray (multi ralt y)
+  rau (multi ralt u)
+  rao (multi ralt o)
+  rap (multi ralt p)
+  raÅ (multi ralt lbrc)
+  ra¨ (multi ralt rbrc)
+
+  raa (multi ralt a)
+  ras (multi ralt s)
+  rad (multi ralt d)
+  raf (multi ralt f)
+  rag (multi ralt g)
+  rah (multi ralt h)
+  raÖ (multi ralt scln)
+  raÄ (multi ralt apos)
+  ra' (multi ralt bksl)
+
+  ra< (multi ralt 102d)
+  raz (multi ralt z)
+  rax (multi ralt x)
+  rac (multi ralt c)
+  rav (multi ralt v)
+  rab (multi ralt b)
+  ran (multi ralt n)
+  ram (multi ralt m)
+  ra, (multi ralt ,)
+  ra. (multi ralt .)
+  ra/ (multi ralt /)
+)

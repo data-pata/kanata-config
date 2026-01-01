@@ -1,0 +1,71 @@
+version: '3'
+
+vars:
+  CONFIG_FILE: config.kbd
+  CONFIG_PATH: ~/.config/kanata
+  SERVICE_PATH: ~/.config/systemd/user/
+  SERVICE_NAME: kanata.service
+
+tasks:
+  check:
+    desc: "Validate config syntax (dry run)"
+    cmds:
+      - kanata --cfg {{.CONFIG_FILE}} --check
+
+  debug:
+    desc: "Stop systemd service and run kanata in foreground with debug logging and auto-reload"
+    cmds:
+      - task: run
+        vars: {FLAGS: "--debug"}
+
+  run:
+    desc: "Stop systemd service and run kanata in foreground with auto-reload"
+    cmds:
+      - task: stop
+      - defer: { task: start }
+      - ls {{.CONFIG_FILE}} | entr -r kanata --cfg {{.CONFIG_FILE}} {{.FLAGS}}
+
+  test:
+    desc: "Test the config without auto-reload"
+    cmds:
+      - task: stop
+      - defer: { task: start }
+      - kanata --cfg {{.CONFIG_FILE}}
+
+  install:
+    desc: "Install and enable kanata systemd service"
+    cmds:
+      - cp {{.CONFIG_PATH}}/{{.CONFIG_FILE}} {{.CONFIG_PATH}}/{{.CONFIG_FILE}}.bak-$(date -Iseconds)
+      - cp {{.SERVICE_NAME}} {{.SERVICE_PATH}}
+      - systemctl --user daemon-reload
+      - systemctl --user enable {{.SERVICE_NAME}}
+      - task: start
+
+  clean:
+    desc: "Remove backup files"
+    cmds:
+      - rm {{.CONFIG_PATH}}/{{.CONFIG_FILE}}.bak-*
+
+  start:
+    desc: "Start the systemd service"
+    cmds:
+      - systemctl --user start {{.SERVICE_NAME}}
+
+  stop:
+    desc: "Stop the systemd service"
+    ignore_error: true
+    cmds:
+      - systemctl --user stop {{.SERVICE_NAME}}
+
+  status:
+    desc: "Check kanata service status"
+    cmds:
+      - systemctl --user status {{.SERVICE_NAME}}
+
+  logs:
+    desc: "View kanata service logs (follow)"
+    cmds:
+      - journalctl --user -u {{.SERVICE_NAME}} -f
+
+
+
