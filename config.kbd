@@ -15,6 +15,7 @@
 
 (defcfg
   process-unmapped-keys yes
+  concurrent-tap-hold yes
   log-layer-changes no
   ;; danger-enable-cmld yes
   ;; concurrent-tap-hold yes
@@ -22,7 +23,7 @@
 
 ;; Variables
 (defvar
-  tap-time 100
+  tap-time 150
   hold-time 150
   ;; chord-time 60
 )
@@ -37,7 +38,7 @@
 )
 
 (defalias
-  cap (tap-hold 100 150 esc lctl)
+  cap (tap-hold $tap-time $hold-time esc lctl)
   iso3 (layer-while-held isolevel3)
 )
 
