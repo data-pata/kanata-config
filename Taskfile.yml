@@ -36,6 +36,7 @@ tasks:
     desc: "Install and enable kanata systemd service"
     cmds:
       - cp {{.CONFIG_PATH}}/{{.CONFIG_FILE}} {{.CONFIG_PATH}}/{{.CONFIG_FILE}}.bak-$(date -Iseconds)
+      - cp {{.CONFIG_FILE}} {{.CONFIG_PATH}}/{{.CONFIG_FILE}}
       - cp {{.SERVICE_NAME}} {{.SERVICE_PATH}}
       - systemctl --user daemon-reload
       - systemctl --user enable {{.SERVICE_NAME}}
@@ -47,9 +48,9 @@ tasks:
       - rm {{.CONFIG_PATH}}/{{.CONFIG_FILE}}.bak-*
 
   start:
-    desc: "Start the systemd service"
+    desc: "Start/restart the systemd service"
     cmds:
-      - systemctl --user start {{.SERVICE_NAME}}
+      - systemctl --user restart {{.SERVICE_NAME}}
 
   stop:
     desc: "Stop the systemd service"
