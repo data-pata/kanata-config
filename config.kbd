@@ -60,10 +60,10 @@
   _     @raq  @raw  @rae  @rar  @rat  @ray  @rau  up    @rao  @rap  @raå  @ra¨  _
   _     @raa  @ras  @rad  @raf  @rag  @rah  left  down  rght  @raö  @raä  @ra'
   _     @ra<  @raz  @rax  @rac  @rav  @rab  @ran  @ram  @ra,  @ra.  @ra-  _
-  _           _     _                _                  _     _
+  _           _     _                mmid                  _     _
 )
 
-;; Ralt/altGr passthrough for ISO level 3
+;; Ralt/altGr passthrough for ISO level 3 shift
 (defalias
   ra§ (multi ralt §)
   ra1 (multi ralt 1)
