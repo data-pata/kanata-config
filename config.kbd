@@ -41,6 +41,7 @@
 )
 
 (defalias
+  ;; tap for escape, hold for left control
   cap (tap-hold $tap-time $hold-time esc lctl)
   iso3 (layer-while-held isolevel3)
 )
@@ -63,9 +64,28 @@
   _           _     _                mmid                  _     _
 )
 
+(defalias
+;; Go to favorite application window
+;; Choose applications by pinning and ordering in the dock
+;; > gsettings list-recursively org.gnome.shell.keybindings
+  ;; raa (multi lmet 1)
+  ;; ras (multi lmet 2)
+  ;; rad (multi lmet 3)
+  ;; raf (multi lmet 4)
+
+;; Go to workspace
+;; > gsettings list-recursively org.gnome.desktop.wm.keybindings | grep switch-to-workspace
+  raa (multi lctl lalt 1)
+  ras (multi lctl lalt 2)
+  rad (multi lctl lalt 3)
+  raf (multi lctl lalt 4)
+  rag (multi lctl lalt 4)
+)
+
 ;; Ralt/altGr passthrough for ISO level 3 shift
 (defalias
   ra§ (multi ralt §)
+  ;; ra§ (macro-repeat a 250)
   ra1 (multi ralt 1)
   ra2 (multi ralt 2)
   ra3 (multi ralt 3)
@@ -91,11 +111,11 @@
   raå (multi ralt å)
   ra¨ (multi ralt ¨)
 
-  raa (multi ralt a)
-  ras (multi ralt s)
-  rad (multi ralt d)
-  raf (multi ralt f)
-  rag (multi ralt g)
+  ;; raa (multi ralt a)
+  ;; ras (multi ralt s)
+  ;; rad (multi ralt d)
+  ;; raf (multi ralt f)
+  ;; rag (multi ralt g)
   rah (multi ralt h)
   raö (multi ralt ö)
   raä (multi ralt ä)
