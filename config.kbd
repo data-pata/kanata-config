@@ -79,7 +79,7 @@
   ras (multi lctl lalt 2)
   rad (multi lctl lalt 3)
   raf (multi lctl lalt 4)
-  rag (multi lctl lalt 4)
+  rag (multi lctl lalt 5)
 )
 
 ;; Ralt/altGr passthrough for ISO level 3 shift
