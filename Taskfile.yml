@@ -67,6 +67,3 @@ tasks:
     desc: "View kanata service logs (follow)"
     cmds:
       - journalctl --user -u {{.SERVICE_NAME}} -f
-
-
-

@@ -8,23 +8,23 @@
 ⌨ Your keyboard isn't broken, but lets fix it anyway ⌨
 ```
 
-This repo holds **opionated** configuration examples, setup instructions and development utilities for your keyboard hacks with [Kanata](https://github.com/jtroo/kanata). Tested on Ubuntu 24.04 - your mileage may vary.
+This repo holds **opinionated** configuration examples, setup instructions and development utilities for your keyboard hacks with [Kanata](https://github.com/jtroo/kanata). Tested on Ubuntu 24.04 - your mileage may vary.
 
 ---
 
 ## Installation
 
-### 1. Download Kanata
+### 1. Install Kanata
 
-Go to the [Kanata Releases](https://github.com/jtroo/kanata/releases) page and download the latest binary:
+Install via Homebrew:
 
 ```bash
-VERSION=$(curl -s https://api.github.com/repos/jtroo/kanata/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
-wget https://github.com/jtroo/kanata/releases/download/${VERSION}/kanata-linux-binaries-${VERSION}-x64.zip
-unzip -p kanata-linux-binaries-${VERSION}-x64.zip kanata_cmd_allowed > ~/bin/kanata
-chmod +x ~/bin/kanata
-rm kanata-linux-binaries-${VERSION}-x64.zip
+brew install kanata
 ```
+
+The systemd service file uses the default Linuxbrew prefix
+(`/home/linuxbrew/.linuxbrew/bin/kanata`). If your brew prefix differs, update `ExecStart` in
+`kanata.service` accordingly — you can find the correct path with `$(brew --prefix)/bin/kanata`.
 
 ### 2. Set Up Permissions
 
