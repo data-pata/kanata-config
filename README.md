@@ -1,6 +1,6 @@
-```
-
 > Moved to the `kanata` package of [data-pata/dotfiles](https://github.com/data-pata/dotfiles) on 2026-09-13, with history. This repository is archived.
+
+```
  _  __                 _
 | |/ /__ _ _ __   __ _| |_ __ _
 | ' // _` | '_ \ / _` | __/ _` |
