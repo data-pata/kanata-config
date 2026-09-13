@@ -12,7 +12,7 @@ This repo holds **opinionated** configuration examples, setup instructions and d
 
 ---
 
-## Installation
+## Installation (Linux)
 
 ### 1. Install Kanata
 
@@ -64,6 +64,22 @@ systemctl --user enable kanata.service
 systemctl --user start kanata.service
 systemctl --user status kanata.service
 ```
+
+---
+
+## Installation (macOS)
+
+kanata grabs the keyboard through the Karabiner-DriverKit-VirtualHIDDevice system extension and must run as root, so it is installed as a LaunchDaemon (`kanata.plist`) reading `/etc/kanata/config.kbd`. Kanata's own `docs/setup-macos.md` is the reference for the driver steps.
+
+1. `brew install kanata go-task`
+2. Install the Karabiner driver package that pairs with the kanata version: v6.2.0 for kanata below 1.13, v8.0.0 from 1.13 on. Activate it with `sudo /Applications/.Karabiner-VirtualHIDDevice-Manager.app/Contents/MacOS/Karabiner-VirtualHIDDevice-Manager forceActivate` and approve it under System Settings > General > Login Items & Extensions > Driver Extensions. Without Karabiner-Elements installed, the virtual HID daemon also needs its own LaunchDaemon, see the kanata docs.
+3. Grant `/opt/homebrew/bin/kanata` Input Monitoring and Accessibility under System Settings > Privacy & Security. `kanata --macos-request-permissions` triggers the prompts. Accessibility is what makes the middle-click alias work.
+4. `task install`, then `task status` and `task logs`.
+5. For the home-row workspace keys, enable "Switch to Desktop 1..5" under System Settings > Keyboard > Keyboard Shortcuts > Mission Control.
+
+Key codes: `deflocalkeys-macos` assumes Apple ISO reporting, where § is 86 and < is 41, the reverse of Linux, and the key left of Return is 43. If a key does not respond, run `task debug` and read the number from the `KeyEvent` log lines. The key left of Return reports as 523 on some non-Apple ISO keyboards.
+
+macOS Tahoe: Background Task Management silently blocks unsigned LaunchDaemons. If `task status` reports the service missing after a reboot, enable it under System Settings > General > Login Items & Extensions > Allow in the Background, and inspect with `sudo sfltool dumpbtm`.
 
 ---
 

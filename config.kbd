@@ -31,6 +31,22 @@
   -   53
 )
 
+;; Same keys as above. Apple ISO keyboards report § and < with each other's HID usage.
+(deflocalkeys-macos
+  §   86
+  +   12
+  ´   13
+  å   26
+  ¨   27
+  ö   39
+  ä   40
+  '   43
+  <   41
+  ,   51
+  .   52
+  -   53
+)
+
 (defsrc
   esc   f1    f2    f3    f4    f5    f6    f7    f8    f9    f10   f11   f12
   §     1     2     3     4     5     6     7     8     9     0     +     ´   bspc
@@ -64,22 +80,26 @@
   _           _     _                mmid                  _     _
 )
 
-(defalias
-;; Go to favorite application window
-;; Choose applications by pinning and ordering in the dock
-;; > gsettings list-recursively org.gnome.shell.keybindings
-  ;; raa (multi lmet 1)
-  ;; ras (multi lmet 2)
-  ;; rad (multi lmet 3)
-  ;; raf (multi lmet 4)
-
-;; Go to workspace
-;; > gsettings list-recursively org.gnome.desktop.wm.keybindings | grep switch-to-workspace
-  raa (multi lctl lalt 1)
-  ras (multi lctl lalt 2)
-  rad (multi lctl lalt 3)
-  raf (multi lctl lalt 4)
-  rag (multi lctl lalt 5)
+;; Go to workspace N from the home row.
+;; GNOME: Ctrl+Alt+N (gsettings list-recursively org.gnome.desktop.wm.keybindings | grep switch-to-workspace)
+(platform (linux)
+  (defalias
+    raa (multi lctl lalt 1)
+    ras (multi lctl lalt 2)
+    rad (multi lctl lalt 3)
+    raf (multi lctl lalt 4)
+    rag (multi lctl lalt 5)
+  )
+)
+;; macOS: Ctrl+N via Mission Control, enabled under System Settings > Keyboard > Keyboard Shortcuts.
+(platform (macos)
+  (defalias
+    raa (multi lctl 1)
+    ras (multi lctl 2)
+    rad (multi lctl 3)
+    raf (multi lctl 4)
+    rag (multi lctl 5)
+  )
 )
 
 ;; Ralt/altGr passthrough for ISO level 3 shift

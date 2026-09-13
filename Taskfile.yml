@@ -2,68 +2,90 @@ version: '3'
 
 vars:
   CONFIG_FILE: config.kbd
-  CONFIG_PATH: ~/.config/kanata
-  SERVICE_PATH: ~/.config/systemd/user/
-  SERVICE_NAME: kanata.service
+  FLAGS: ''
+  # Linux: user config read by a systemd user unit. macOS: root-readable config read by a LaunchDaemon.
+  LINUX_CONFIG_DIR: $HOME/.config/kanata
+  MACOS_CONFIG_DIR: /etc/kanata
+  PLIST_LABEL: dev.kanata.kanata
+  PLIST_PATH: /Library/LaunchDaemons/dev.kanata.kanata.plist
 
 tasks:
   check:
-    desc: "Validate config syntax (dry run)"
+    desc: Validate config syntax
     cmds:
       - kanata --cfg {{.CONFIG_FILE}} --check
 
+  run:
+    desc: Stop the service and run kanata in the foreground (Linux reloads on save)
+    cmds:
+      - task: stop
+      - defer: { task: start }
+      - cmd: ls {{.CONFIG_FILE}} | entr -r kanata --cfg {{.CONFIG_FILE}} {{.FLAGS}}
+        platforms: [linux]
+      - cmd: sudo kanata --cfg {{.CONFIG_FILE}} {{.FLAGS}}
+        platforms: [darwin]
+
   debug:
-    desc: "Stop systemd service and run kanata in foreground with debug logging and auto-reload"
+    desc: Same as run, with debug logging (prints the key codes deflocalkeys needs)
     cmds:
       - task: run
-        vars: {FLAGS: "--debug"}
-
-  run:
-    desc: "Stop systemd service and run kanata in foreground with auto-reload"
-    cmds:
-      - task: stop
-      - defer: { task: start }
-      - ls {{.CONFIG_FILE}} | entr -r kanata --cfg {{.CONFIG_FILE}} {{.FLAGS}}
-
-  test:
-    desc: "Test the config without auto-reload"
-    cmds:
-      - task: stop
-      - defer: { task: start }
-      - kanata --cfg {{.CONFIG_FILE}}
+        vars: { FLAGS: --debug }
 
   install:
-    desc: "Install and enable kanata systemd service"
+    desc: Install the config and the service, then start it
     cmds:
-      - cp {{.CONFIG_PATH}}/{{.CONFIG_FILE}} {{.CONFIG_PATH}}/{{.CONFIG_FILE}}.bak-$(date -Iseconds)
-      - cp {{.CONFIG_FILE}} {{.CONFIG_PATH}}/{{.CONFIG_FILE}}
-      - cp {{.SERVICE_NAME}} {{.SERVICE_PATH}}
-      - systemctl --user daemon-reload
-      - systemctl --user enable {{.SERVICE_NAME}}
+      - cmd: |
+          mkdir -p {{.LINUX_CONFIG_DIR}} $HOME/.config/systemd/user
+          test -f {{.LINUX_CONFIG_DIR}}/{{.CONFIG_FILE}} && cp {{.LINUX_CONFIG_DIR}}/{{.CONFIG_FILE}} {{.LINUX_CONFIG_DIR}}/{{.CONFIG_FILE}}.bak-$(date +%Y-%m-%dT%H%M%S) || true
+          cp {{.CONFIG_FILE}} {{.LINUX_CONFIG_DIR}}/
+          cp kanata.service $HOME/.config/systemd/user/
+          systemctl --user daemon-reload
+          systemctl --user enable kanata.service
+        platforms: [linux]
+      - cmd: |
+          sudo mkdir -p {{.MACOS_CONFIG_DIR}}
+          sudo cp {{.CONFIG_FILE}} {{.MACOS_CONFIG_DIR}}/
+          sudo cp kanata.plist {{.PLIST_PATH}}
+          sudo chown root:wheel {{.PLIST_PATH}}
+          sudo launchctl bootout system/{{.PLIST_LABEL}} 2>/dev/null || true
+        platforms: [darwin]
       - task: start
 
-  clean:
-    desc: "Remove backup files"
-    cmds:
-      - rm {{.CONFIG_PATH}}/{{.CONFIG_FILE}}.bak-*
-
   start:
-    desc: "Start/restart the systemd service"
+    desc: Start or restart the service
     cmds:
-      - systemctl --user restart {{.SERVICE_NAME}}
+      - cmd: systemctl --user restart kanata.service
+        platforms: [linux]
+      - cmd: sudo launchctl bootstrap system {{.PLIST_PATH}} 2>/dev/null || sudo launchctl kickstart -k system/{{.PLIST_LABEL}}
+        platforms: [darwin]
 
   stop:
-    desc: "Stop the systemd service"
+    desc: Stop the service
     ignore_error: true
     cmds:
-      - systemctl --user stop {{.SERVICE_NAME}}
+      - cmd: systemctl --user stop kanata.service
+        platforms: [linux]
+      - cmd: sudo launchctl bootout system/{{.PLIST_LABEL}}
+        platforms: [darwin]
 
   status:
-    desc: "Check kanata service status"
+    desc: Show service status
     cmds:
-      - systemctl --user status {{.SERVICE_NAME}}
+      - cmd: systemctl --user status kanata.service
+        platforms: [linux]
+      - cmd: sudo launchctl print system/{{.PLIST_LABEL}}
+        platforms: [darwin]
 
   logs:
-    desc: "View kanata service logs (follow)"
+    desc: Follow service logs
     cmds:
-      - journalctl --user -u {{.SERVICE_NAME}} -f
+      - cmd: journalctl --user -u kanata.service -f
+        platforms: [linux]
+      - cmd: sudo tail -f /var/log/kanata.log
+        platforms: [darwin]
+
+  clean:
+    desc: Remove config backups (Linux)
+    cmds:
+      - cmd: rm -f {{.LINUX_CONFIG_DIR}}/{{.CONFIG_FILE}}.bak-*
+        platforms: [linux]
